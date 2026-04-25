@@ -2,7 +2,7 @@
 # lib/constants.sh — Global constants, colors, and configuration arrays
 
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_VERSION="2.2.0"
+readonly SCRIPT_VERSION="2.3.0"
 
 readonly LOG_DIR="/var/log/e2-setup"
 readonly LOG_FILE="${LOG_DIR}/setup-$(date +%Y%m%d-%H%M%S).log"
@@ -14,6 +14,10 @@ readonly LATEST_BACKUP_LINK="${BACKUP_DIR}/latest"
 
 readonly LOCK_FILE="/var/lock/e2-setup.lock"
 readonly MIN_FREE_SPACE_MB=100
+
+readonly REPO_BASE="https://github.com/0x733/E2"
+readonly REPO_TARBALL="${REPO_BASE}/archive/refs/heads/main.tar.gz"
+readonly REPO_INSTALLER="https://raw.githubusercontent.com/0x733/E2/main/install.sh"
 
 readonly FEED_OEA_URL="http://updates.mynonpublic.com/oea/feed"
 readonly EMULATOR_URL="https://raw.githubusercontent.com/levi-45/Levi45Emulator/refs/heads/main/installer.sh"

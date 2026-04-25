@@ -46,6 +46,7 @@ mod_configure_feeds() {
                 return 1
             fi
         else
+            ((ERRORS++))
             return 1
         fi
         rm -f "$installer"

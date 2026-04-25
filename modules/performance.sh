@@ -82,9 +82,16 @@ mod_apply_performance_tweaks() {
         } > "$SYSCTL_DROPIN"
 
         if has_command sysctl; then
-            sysctl -p "$SYSCTL_DROPIN" >/dev/null 2>&1 \
-                && log_ok "Sysctl settings active" \
-                || log_warn "Sysctl could not be applied now (will activate on reboot)"
+            local sysctl_out sysctl_rc
+            sysctl_out="$(sysctl -p "$SYSCTL_DROPIN" 2>&1)"
+            sysctl_rc=$?
+            if [[ $sysctl_rc -eq 0 ]]; then
+                log_ok "Sysctl settings active"
+            else
+                local first_err
+                first_err="$(printf '%s' "$sysctl_out" | grep -m1 'sysctl:' || printf '%s' "$sysctl_out" | head -1)"
+                log_warn "Sysctl could not be applied now (will activate on reboot): ${first_err}"
+            fi
         fi
         log_ok "Sysctl drop-in: $SYSCTL_DROPIN"
         ((CONFIG_CHANGES++))

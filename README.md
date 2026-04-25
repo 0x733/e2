@@ -40,6 +40,41 @@ modules/
   health.sh              mod_health_report (read-only diagnostics)
 ```
 
+## Installation
+
+Enigma2 cihazlarında `git` bulunmaz. Aşağıdaki tek satır **wget** komutuyla
+betiği indirip doğrudan çalıştırabilirsiniz:
+
+```sh
+wget -qO /tmp/e2-install.sh \
+  https://raw.githubusercontent.com/0x733/E2/main/install.sh \
+  && sh /tmp/e2-install.sh
+```
+
+Kurulum betiğine `e2-setup.sh` seçenekleri doğrudan geçirilebilir:
+
+```sh
+# Dry-run — herhangi bir değişiklik yapmadan önizleme
+sh /tmp/e2-install.sh --dry-run
+
+# Sadece performans modülünü çalıştır
+sh /tmp/e2-install.sh --only=performance
+
+# Emülatör ve bloatware adımlarını atla
+sh /tmp/e2-install.sh --skip-emulators --skip-bloatware
+```
+
+**`install.sh` ne yapar?**
+
+1. `wget` ile GitHub'dan projenin tar.gz arşivini `/tmp` altına indirir  
+2. `tar` ile `/tmp/e2-setup-remote/` dizinine çıkartır  
+3. `e2-setup.sh`'ı doğrudan çalıştırır; tüm argümanlar iletilir  
+
+> **Not:** İndirme başarısız olursa betik çıkış kodu sıfırdan farklı döner
+> ve hiçbir değişiklik yapılmaz.
+
+---
+
 ## Usage
 
 ```bash

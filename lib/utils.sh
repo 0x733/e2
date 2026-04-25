@@ -41,7 +41,7 @@ is_installed() {
 download_verified() {
     local url="$1" dest="$2" expected_sha256="${3:-}"
 
-    log_info "Downloading: $(basename "$dest")..."
+    log_info "Downloading: $url"
     if ! wget -q --timeout=30 -O "$dest" "$url"; then
         log_error "Download failed: $url"
         rm -f "$dest"
