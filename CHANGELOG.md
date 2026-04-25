@@ -8,22 +8,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [2.3.0] — 2026-04-25
 
 ### Added
-- `install.sh` — tek dosya POSIX bootstrap betiği; Enigma2 cihazlarında
-  `git` olmadan tek bir `wget` komutuyla projeyi indirip çalıştırmayı sağlar.
-  GitHub tarball'ını (`/archive/refs/heads/main.tar.gz`) `/tmp/e2-setup-remote/`
-  altına indirir ve `e2-setup.sh`'ı tüm argümanları geçirerek başlatır.
-- `lib/constants.sh`: `REPO_BASE`, `REPO_TARBALL`, `REPO_INSTALLER` — repo URL'leri
-  için tek kaynak sabitleri.
-- `README.md`: "Installation" bölümü — tek satır wget komutu ve argüman örnekleri.
+- `install.sh` — single-file POSIX bootstrap script; allows downloading and running
+  the project on Enigma2 devices (which have no `git`) with a single `wget` command.
+  Downloads the GitHub tarball (`/archive/refs/heads/main.tar.gz`) to
+  `/tmp/e2-setup-remote/` and launches `e2-setup.sh`, forwarding all arguments.
+- `lib/constants.sh`: `REPO_BASE`, `REPO_TARBALL`, `REPO_INSTALLER` — single-source
+  constants for all repository URLs.
+- `README.md`: "Installation" section — one-liner wget command with usage examples.
 
 ### Fixed
-- `lib/utils.sh`: `download_verified()` artık geçici dosya adı yerine gerçek URL'yi
-  logluyor (`Downloading: http://…`).
-- `modules/packages.sh`: feed indirme hatası artık `ERRORS` sayacını artırıyor;
-  önceden `[ERROR]` log'lanmasına rağmen özet tabloya yansımıyordu.
-- `modules/performance.sh`: `sysctl -p` hatası artık susturulmuyor; başarısız olduğunda
-  ilk `sysctl: …` satırı uyarıya ekleniyor. Ayrıca `local` atamasının dönüş kodunu
-  maskeleme sorunu düzeltildi (`sysctl_rc=$?` ayrı satıra alındı).
+- `lib/utils.sh`: `download_verified()` now logs the actual URL instead of the
+  temp filename (`Downloading: http://…`).
+- `modules/packages.sh`: feed download failures now increment the `ERRORS` counter;
+  previously the error was logged but not reflected in the summary table.
+- `modules/performance.sh`: `sysctl -p` errors are no longer silenced; the first
+  `sysctl: …` line is appended to the warning. Also fixed a return-code masking issue
+  caused by combining `local` with assignment (`sysctl_rc=$?` moved to its own line).
 
 ---
 

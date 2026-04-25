@@ -42,8 +42,8 @@ modules/
 
 ## Installation
 
-Enigma2 cihazlarında `git` bulunmaz. Aşağıdaki tek satır **wget** komutuyla
-betiği indirip doğrudan çalıştırabilirsiniz:
+Enigma2 devices do not have `git`. Use the single **wget** command below to
+download and run the script directly:
 
 ```sh
 wget -qO /tmp/e2-install.sh \
@@ -51,27 +51,27 @@ wget -qO /tmp/e2-install.sh \
   && sh /tmp/e2-install.sh
 ```
 
-Kurulum betiğine `e2-setup.sh` seçenekleri doğrudan geçirilebilir:
+All `e2-setup.sh` options can be passed directly to the installer:
 
 ```sh
-# Dry-run — herhangi bir değişiklik yapmadan önizleme
+# Dry-run — preview all changes without applying anything
 sh /tmp/e2-install.sh --dry-run
 
-# Sadece performans modülünü çalıştır
+# Run only the performance module
 sh /tmp/e2-install.sh --only=performance
 
-# Emülatör ve bloatware adımlarını atla
+# Skip the emulator and bloatware steps
 sh /tmp/e2-install.sh --skip-emulators --skip-bloatware
 ```
 
-**`install.sh` ne yapar?**
+**What does `install.sh` do?**
 
-1. `wget` ile GitHub'dan projenin tar.gz arşivini `/tmp` altına indirir  
-2. `tar` ile `/tmp/e2-setup-remote/` dizinine çıkartır  
-3. `e2-setup.sh`'ı doğrudan çalıştırır; tüm argümanlar iletilir  
+1. Downloads the project tar.gz archive from GitHub to `/tmp` via `wget`
+2. Extracts it to `/tmp/e2-setup-remote/` using `tar`
+3. Executes `e2-setup.sh`, forwarding all arguments
 
-> **Not:** İndirme başarısız olursa betik çıkış kodu sıfırdan farklı döner
-> ve hiçbir değişiklik yapılmaz.
+> **Note:** If the download fails, the script exits with a non-zero code
+> and no changes are made.
 
 ---
 
