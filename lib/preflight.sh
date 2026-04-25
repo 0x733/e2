@@ -20,10 +20,18 @@ check_enigma2() {
 
 check_network() {
     log_info "Checking internet connectivity..."
-    local hosts=("8.8.8.8" "1.1.1.1" "updates.mynonpublic.com")
-    for host in "${hosts[@]}"; do
+    # Try HTTP first (works even when ICMP is blocked), fall back to ping.
+    local http_targets=("http://connectivitycheck.gstatic.com/generate_204" "http://1.1.1.1")
+    for url in "${http_targets[@]}"; do
+        if wget -q --timeout=5 -O /dev/null "$url" 2>/dev/null; then
+            log_ok "Connection OK ($url reachable)"
+            return 0
+        fi
+    done
+    local ping_hosts=("8.8.8.8" "1.1.1.1" "updates.mynonpublic.com")
+    for host in "${ping_hosts[@]}"; do
         if ping -c 1 -W 3 "$host" >/dev/null 2>&1; then
-            log_ok "Connection OK ($host reachable)"
+            log_ok "Connection OK ($host reachable via ping)"
             return 0
         fi
     done

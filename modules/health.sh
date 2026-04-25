@@ -110,9 +110,9 @@ _health_enigma2() {
         pid="$(pgrep -x enigma2 | head -1)"
         log_ok "enigma2 running (PID: $pid)"
 
-        if [[ -r /proc/$pid/stat ]]; then
+        if [[ -r "/proc/$pid/stat" ]]; then
             local ticks hz uptime_s start
-            ticks="$(awk '{print $22}' /proc/$pid/stat 2>/dev/null)"
+            ticks="$(awk '{print $22}' "/proc/$pid/stat" 2>/dev/null)"
             hz="$(getconf CLK_TCK 2>/dev/null || echo 100)"
             uptime_s="$(cut -d. -f1 /proc/uptime)"
             start=$(( uptime_s - ticks / hz ))

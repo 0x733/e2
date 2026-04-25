@@ -27,6 +27,7 @@ get_total_ram_mb() {
 }
 
 # Package list is cached on first call to avoid repeated opkg invocations.
+# Call invalidate_pkg_cache after install/remove operations.
 _INSTALLED_CACHE=""
 is_installed() {
     if [[ -z "$_INSTALLED_CACHE" ]]; then
@@ -34,6 +35,8 @@ is_installed() {
     fi
     echo "$_INSTALLED_CACHE" | grep -q "^$1 "
 }
+
+invalidate_pkg_cache() { _INSTALLED_CACHE=""; }
 
 # Downloads a file and optionally verifies its SHA-256 checksum.
 # If no expected checksum is supplied, shows the actual hash and prompts

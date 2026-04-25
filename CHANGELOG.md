@@ -5,6 +5,50 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [2.4.0] — 2026-04-25
+
+### Added
+- `lib/utils.sh`: `invalidate_pkg_cache()` — clears the `is_installed` cache after
+  any install or remove operation so subsequent checks reflect the current package
+  state; previously the stale cache could cause packages to be reported as installed
+  after removal or vice-versa.
+- `modules/emulators.sh`: `_emulators_preinstall_oscam()` — attempts `opkg install oscam-emu`
+  before running the Levi45 installer. If oscam is available in the OE-Alliance feed
+  the Levi45 installer detects it already present and skips its own download step,
+  eliminating the most common cause of emulator installation failures.
+- `modules/performance.sh`: `_ensure_sysctl_boot_persistence()` — creates
+  `/etc/init.d/e2-performance` and registers it via `update-rc.d` or an `/etc/rc5.d`
+  symlink so sysctl tweaks survive reboots. Previously the drop-in file was written
+  but never loaded at boot because busybox `sysctl` does not process `/etc/sysctl.d/`.
+
+### Fixed
+- `modules/emulators.sh`: Levi45 installer output is now captured; on failure the last
+  10 lines are surfaced as ERROR log entries so the actual cause (e.g. a failed oscam
+  download URL) is visible instead of a generic "execution failed" message.
+- `modules/performance.sh`: sysctl settings are now applied one-by-one with
+  `sysctl -w key=value` instead of `sysctl -p <file>`. The old approach stopped at
+  the first unsupported parameter, leaving all subsequent valid settings unapplied.
+  Unsupported parameters are now skipped with a warning and a summary
+  (`N applied, M skipped`) is logged.
+- `modules/packages.sh`: removed a redundant `((ERRORS++))` in the feed download
+  error path — `log_error` already increments the counter, so errors were being
+  double-counted in the summary table.
+- `modules/packages.sh`: `invalidate_pkg_cache` called after each successful
+  `opkg install` so subsequent `is_installed` checks reflect reality.
+- `modules/bloatware.sh`: `invalidate_pkg_cache` called after each successful
+  `opkg remove` for the same reason.
+- `modules/update.sh`: `opkg list-upgradable` is no longer called in dry-run mode.
+  Previously this executed a real system command even when `--dry-run` was active.
+- `e2-setup.sh`: `print_summary` return value is now checked (`print_summary || exit 1`).
+  Previously the script always exited with code 0 even when errors were recorded.
+- `modules/backup.sh`: `list_backups` now skips the `latest` symlink. The `*/` glob
+  followed the symlink and listed the target directory a second time.
+- `modules/health.sh`: `/proc/$pid/stat` paths now properly quoted.
+- `lib/preflight.sh`: network check now tries HTTP (`wget`) before falling back to
+  ICMP ping, which is blocked on some networks and Enigma2 firmware configurations.
+
+---
+
 ## [2.3.0] — 2026-04-25
 
 ### Added

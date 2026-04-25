@@ -2,7 +2,7 @@
 # lib/constants.sh — Global constants, colors, and configuration arrays
 
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_VERSION="2.3.0"
+readonly SCRIPT_VERSION="2.4.0"
 
 readonly LOG_DIR="/var/log/e2-setup"
 readonly LOG_FILE="${LOG_DIR}/setup-$(date +%Y%m%d-%H%M%S).log"

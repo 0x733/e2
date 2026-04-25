@@ -16,6 +16,7 @@ install_packages() {
         if run opkg install "$pkg"; then
             log_ok "Installed: $pkg"
             ((INSTALLED++))
+            invalidate_pkg_cache
         else
             log_error "Failed to install: $pkg"
         fi
@@ -46,7 +47,6 @@ mod_configure_feeds() {
                 return 1
             fi
         else
-            ((ERRORS++))
             return 1
         fi
         rm -f "$installer"

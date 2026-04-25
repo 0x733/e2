@@ -3,6 +3,8 @@
 A modular Bash script for setting up and optimizing **Enigma2** satellite receivers.  
 Compatible with OpenATV, OpenPLi, OE-Alliance, OpenVIX, and PurE2.
 
+> **Latest:** v2.4.0
+
 ## Features
 
 | Feature | Description |
@@ -147,6 +149,15 @@ its SHA-256 is displayed, and user confirmation is required before execution.
 Installs the Levi45 emulator package via its upstream installer (same
 download-verify-confirm flow as feeds).
 
+Before running the Levi45 installer, the module attempts `opkg install oscam-emu`
+from the OE-Alliance feed. If oscam-emu is already present the Levi45 installer
+detects it and skips its own download step — eliminating the most common cause
+of emulator installation failures on restricted networks. If oscam-emu is not
+available in the feed the Levi45 installer proceeds as normal.
+
+On failure, the last 10 lines of the installer output are logged at ERROR level
+so the exact cause is visible without needing to re-run manually.
+
 ### `bloatware`
 Removes unused pre-installed packages: HbbTV, built-in browser, Chromium, miniDLNA,
 Bluetooth, UPnP, NFS server, Software Manager, Network Wizard, modem plugins.
@@ -156,6 +167,10 @@ Bluetooth, UPnP, NFS server, Software Manager, Network Wizard, modem plugins.
 - Writes `/etc/sysctl.d/99-e2-performance.conf` with embedded-hardware-tuned values
 - Network buffer sizes (`rmem_max`, `wmem_max`) are computed from available RAM:
   `RAM / 32`, clamped to [256 KB, 1 MB]
+- Each sysctl parameter is applied individually with `sysctl -w` — parameters
+  unsupported by the device kernel are skipped with a warning, not fatal errors
+- Creates `/etc/init.d/e2-performance` for boot persistence (busybox `sysctl`
+  does not automatically read `/etc/sysctl.d/` at startup)
 
 **Sysctl values applied:**
 

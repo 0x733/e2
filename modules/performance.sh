@@ -48,6 +48,40 @@ _compute_net_buf() {
     echo "$buf"
 }
 
+# Enigma2 uses busybox sysctl which does not read /etc/sysctl.d/ at boot.
+# Create an init.d script so the drop-in is applied on every startup.
+_ensure_sysctl_boot_persistence() {
+    local init_script="/etc/init.d/e2-performance"
+
+    if [[ -f "$init_script" ]]; then
+        log_debug "Boot persistence script already exists: $init_script"
+        return 0
+    fi
+
+    cat > "$init_script" <<EOF
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          e2-performance
+# Required-Start:    \$local_fs
+# Default-Start:     S
+# Description:       Apply e2-setup sysctl performance tweaks
+### END INIT INFO
+[ -f "$SYSCTL_DROPIN" ] && sysctl -p "$SYSCTL_DROPIN" >/dev/null 2>&1
+EOF
+    chmod +x "$init_script"
+
+    # Register with update-rc.d if available, otherwise symlink manually.
+    if has_command update-rc.d; then
+        update-rc.d e2-performance defaults >/dev/null 2>&1 \
+            && log_ok "Boot persistence: registered via update-rc.d"
+    elif [[ -d /etc/rc5.d ]]; then
+        ln -sf "$init_script" /etc/rc5.d/S02e2-performance 2>/dev/null \
+            && log_ok "Boot persistence: symlinked to /etc/rc5.d"
+    else
+        log_warn "Could not auto-register boot script — run manually: $init_script"
+    fi
+}
+
 mod_apply_performance_tweaks() {
     [[ $SKIP_PERFORMANCE -eq 1 ]] && { log_info "Performance tweaks skipped"; return 0; }
     log_step "Performance Optimizations"
@@ -82,17 +116,24 @@ mod_apply_performance_tweaks() {
         } > "$SYSCTL_DROPIN"
 
         if has_command sysctl; then
-            local sysctl_out sysctl_rc
-            sysctl_out="$(sysctl -p "$SYSCTL_DROPIN" 2>&1)"
-            sysctl_rc=$?
-            if [[ $sysctl_rc -eq 0 ]]; then
-                log_ok "Sysctl settings active"
-            else
-                local first_err
-                first_err="$(printf '%s' "$sysctl_out" | grep -m1 'sysctl:' || printf '%s' "$sysctl_out" | head -1)"
-                log_warn "Sysctl could not be applied now (will activate on reboot): ${first_err}"
-            fi
+            local applied=0 skipped=0
+            while IFS= read -r line || [[ -n "$line" ]]; do
+                # strip comments and blank lines
+                line="${line%%#*}"
+                line="${line//[[:space:]]/}"
+                [[ -z "$line" ]] && continue
+                if sysctl -w "$line" >/dev/null 2>&1; then
+                    ((applied++))
+                else
+                    log_warn "sysctl: unsupported on this kernel, skipped: ${line%%=*}"
+                    ((skipped++))
+                fi
+            done < "$SYSCTL_DROPIN"
+            log_ok "Sysctl: ${applied} applied, ${skipped} skipped (unsupported by kernel)"
         fi
+
+        _ensure_sysctl_boot_persistence
+
         log_ok "Sysctl drop-in: $SYSCTL_DROPIN"
         ((CONFIG_CHANGES++))
     else

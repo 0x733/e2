@@ -13,6 +13,7 @@ mod_remove_bloatware() {
         if run opkg remove --force-depends "$pkg"; then
             log_ok "Removed: $pkg"
             ((REMOVED++))
+            invalidate_pkg_cache
         else
             log_warn "Could not remove: $pkg"
         fi

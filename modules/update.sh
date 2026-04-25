@@ -8,6 +8,11 @@ mod_update_system() {
     run opkg update || { log_error "opkg update failed"; return 1; }
     log_ok "Package list updated"
 
+    if [[ $DRY_RUN -eq 1 ]]; then
+        log_dry "opkg list-upgradable | opkg upgrade"
+        return 0
+    fi
+
     local upgradable
     upgradable="$(opkg list-upgradable 2>/dev/null | wc -l)"
     log_info "Upgradable packages: $upgradable"

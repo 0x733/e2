@@ -47,6 +47,7 @@ list_backups() {
         [[ -d "$dir" ]] || continue
         local name size
         name="$(basename "$dir")"
+        [[ "$name" == "latest" ]] && continue
         size="$(du -sh "$dir" 2>/dev/null | cut -f1)"
         printf "  %s  %s\n" "$size" "$name"
     done

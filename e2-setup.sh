@@ -234,7 +234,7 @@ main() {
         mod_configure_system
     fi
 
-    print_summary
+    print_summary || exit 1
 }
 
 main "$@"
